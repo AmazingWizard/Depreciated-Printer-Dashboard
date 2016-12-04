@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Printer Dashboard</title>
+
+    <!-- CSS -->
+    <!-- load Bootstrap and custom style.css -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+
+
+    <!-- JS -->
+    <!-- load Angular, Firebase, Firebase Angular Library, and custom app.js -->
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.4.0/firebase.js"></script>
+
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.min.js"></script>
+    <script src="app.js"></script>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+</head>
+<body>
+<div class="container-fluid" ng-app="scheduleApp" ng-controller="mainController">
+
+  <div class="page-header text-center">
+    <h1>Printer Dashboard</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Settings
+        </div>
+        <div class="panel-body">
+          <p>
+            <strong>Sort By:</strong>
+          </p>
+          <div class="btn-group" role="group" aria-label="...">
+            <button type="radio" class="btn btn-default" ng-click="SortToner('TonerAverage')">Overall Toner</button>
+            <button type="radio" class="btn btn-default" ng-click="SortToner('Black')">Black Toner</button>
+            <button type="radio" class="btn btn-default" ng-click="SortToner('Cyan')">Cyan Toner</button>
+            <button type="radio" class="btn btn-default" ng-click="SortToner('Magenta')">Magenta Toner</button>
+            <button type="radio" class="btn btn-default" ng-click="SortToner('Yellow')">Yellow Toner</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- were doing one day with 1 time slot for simplicity -->
+  <!-- we'll use angular's ng-repeat in a bit to get the other days and times -->
+  <div class="row">
+
+    <div class="col-xs-3" ng-repeat="Printer in filteredPrinters">
+        <div class="panel panel-{{Printer.Color}}">
+
+          <div class="panel-heading">
+            <strong><span class="label label-{{Printer.Online.Color}}">{{Printer.Online.Status}}</span> {{Printer.Name}}</strong>
+          </div>
+
+          <div class="panel-body">
+            <!-- Main Toner Level -->
+            Overal Toner Level
+            <div class="progress" ng-switch on="curr_color">
+              <div ng-switch-when="TonerAverage" class="progress-bar progress-bar-{{Printer.Color}}" role="progressbar" aria-valuenow="{{Printer.Toner.TonerAverage.Percentage}}" aria-valuemin="0" aria-valuemax="100" style="width:{{Printer.Toner.TonerAverage.Percentage}}%;"></div>
+              <div ng-switch-when="Black" class="progress-bar progress-{{Printer.Toner.Black.Color}}" role="progressbar" aria-valuenow="{{Printer.Toner.Black.Percentage}}" aria-valuemin="0" aria-valuemax="100" style="width:{{Printer.Toner.Black.Percentage}}%;"></div>
+              <div ng-switch-when="Cyan" class="progress-bar progress-{{Printer.Toner.Cyan.Color}}" role="progressbar" aria-valuenow="{{Printer.Toner.Cyan.Percentage}}" aria-valuemin="0" aria-valuemax="100" style="width:{{Printer.Toner.Cyan.Percentage}}%;"></div>
+              <div ng-switch-when="Magenta" class="progress-bar progress-{{Printer.Toner.Magenta.Color}}" role="progressbar" aria-valuenow="{{Printer.Toner.Magenta.Percentage}}" aria-valuemin="0" aria-valuemax="100" style="width:{{Printer.Toner.Magenta.Percentage}}%;"></div>
+              <div ng-switch-when="Yellow" class="progress-bar progress-{{Printer.Toner.Yellow.Color}}" role="progressbar" aria-valuenow="{{Printer.Toner.Yellow.Percentage}}" aria-valuemin="0" aria-valuemax="100" style="width:{{Printer.Toner.Yellow.Percentage}}%;"></div>
+            </div>
+          </div>
+          <ul class="list-group">
+            <a href="" data-toggle="collapse" data-target="#{{Printer.Name}}">
+              <li class="list-group-item">
+                <span class="glyphicon glyphicon-menu-down"></span>
+                <strong>Toner Details</strong>
+              </li>
+              <div id="{{Printer.Name}}" class="collapse">
+              <li class="list-group-item list-group-item-{{Printer.Color}}">
+                  <p>
+                    <div ng-repeat="Toner in Printer.Toner">
+                      <div ng-if="Toner.Name != 'TonerAverage' ">
+                        <span class="progress-label"><strong>{{Toner.Color}}</strong></span>
+                        <div class="progress">
+                          <div class="progress-bar progress-{{Toner.Color}}" role="progressbar" aria-valuenow="{{Toner.Percentage}}" aria-valuemin="0" aria-valuemax="100" style="width:{{Toner.Percentage}}%;"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </p>
+              </li>
+            </div>
+          </a>
+          </ul>
+          <!-- Individule Toner Levels Toner Level
+          <p><button class="btn btn-default" data-toggle="collapse" data-target="#{{Printer.Name}}">Individual Toner Level</button></p>
+          <div id="{{Printer.Name}}" class="collapse">
+            <div class="progress" ng-repeat="Toner in Printer.Toner">
+              <div class="progress-bar progress-{{Toner.Color}}" role="progressbar" aria-valuenow="{{Toner.Percentage}}" aria-valuemin="0" aria-valuemax="100" style="width:{{Toner.Percentage}}%;"></div>
+            </div>
+          </div>
+          -->
+          <div class="panel-footer">
+            <a href="http://{{Printer.Address}}/">{{Printer.Address}}</a> <br>
+            {{Printer.Type}}
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+</body>
+</html>
