@@ -5,7 +5,7 @@ var app = angular.module('scheduleApp', ['firebase'])
 app.controller('mainController', function($scope, $firebaseArray) {
 
   // our application code will go here
-  var ref = new Firebase("https://printer-status.firebaseio.com/Printers")
+  var ref = new Firebase("https://your-firebase-db.firebaseio.com/Printers")
   $scope.printers = $firebaseArray(ref);
   var query = ref.orderByChild("Toner/TonerAverage/Percentage");
   $scope.filteredPrinters = $firebaseArray(query);
