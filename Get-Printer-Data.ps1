@@ -11,7 +11,7 @@ $fb_url = "https://your-firebase-app.firebaseio.com"
 
 $All_Printers = get-printer -ComputerName $PrintServer | 
     Where-Object {
-        $_.Name -like "Add Your Filter Here" |
+        $_.Name -like "Add Your Filter Here"} |
     Where-Object {  $_.DeviceType -EQ "Print" } # I forget why I did this. Some printers showed up with a different Device Type, and I think they were not "real" printers.
 
 foreach ($Printer in $All_Printers){
